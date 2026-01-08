@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Bus Pass System</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .sidebar {
+            width: 250px;
+            background: #fff;
+            height: 100vh;
+            border-right: 1px solid var(--color-border);
+            position: fixed;
+            padding: var(--spacing-md);
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: var(--spacing-lg);
+            background-color: var(--color-bg-alt);
+            min-height: 100vh;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background-color: #F3F4F6;
+            color: #374151;
+        }
+
+        .status-approved {
+            background-color: #FFFBEB;
+            color: #D97706;
+            /* Darker yellow/orange for readability */
+        }
+
+        .status-rejected {
+            background-color: #F3F4F6;
+            color: #9CA3AF;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: var(--color-text-secondary);
+            border-radius: var(--radius-sm);
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .nav-item.active {
+            background-color: #FFFBEB;
+            color: #f5c431;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background-color: var(--color-bg-alt);
+        }
+
+        /* Modern Form Controls */
+        select.form-control {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.75rem center;
+            background-repeat: no-repeat;
+            background-size: 1.25em 1.25em;
+            padding-right: 2.5rem;
+            cursor: pointer;
+        }
+
+        /* File Upload Styling */
+        input[type="file"]::file-selector-button {
+            margin-right: 1rem;
+            border: none;
+            background: #111827;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            color: #fff;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background .2s ease-in-out;
+            font-family: 'Inter', sans-serif;
+        }
+
+        input[type="file"]::file-selector-button:hover {
+            background: #374151;
+        }
+
+        .view-section {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        /* Digital Pass Styles */
+        .pass-card {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+            max-width: 400px;
+            margin: 0 auto;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .pass-header {
+            background: linear-gradient(135deg, #f5c431 0%, #F59E0B 100%);
+            color: #111827;
+            /* Dark text on yellow */
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pass-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .pass-header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .pass-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            backdrop-filter: blur(4px);
+        }
+
+        .pass-body {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .info-box {
+            background: #F8FAFC;
+            padding: 1rem;
+            border-radius: 1rem;
+            text-align: left;
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-outline {
+            border: 1px solid #E2E8F0;
+            background: white;
+            color: #1E293B;
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-outline:hover {
+            background: #F8FAFC;
+            border-color: #CBD5E1;
+        }
+
+        /* Custom Dropdown Styling */
+        .custom-select-wrapper {
+            position: relative;
+            user-select: none;
+            width: 100%;
+        }
+
+        .custom-select {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .custom-select__trigger {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1rem;
+            font-size: 1rem;
+            font-weight: 400;
+            color: #333;
+            height: 48px;
+            line-height: 48px;
+            background: #F9FAFB;
+            border: 1px solid #F3F4F6;
+            border-radius: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .custom-select__trigger:hover {
+            background: white;
+            border-color: var(--color-accent);
+        }
+
+        .custom-options {
+            position: absolute;
+            display: block;
+            top: 100%;
+            left: 0;
+            right: 0;
+            border: 1px solid #F3F4F6;
+            border-top: 0;
+            background: #fff;
+            transition: all 0.2s;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            z-index: 10;
+            border-radius: 0 0 1rem 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .custom-select.open .custom-options {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: all;
+            transform: translateY(0);
+        }
+
+        .custom-option {
+            position: relative;
+            display: block;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            font-weight: 400;
+            color: #333;
+            line-height: 1.5;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .custom-option:hover {
+            background-color: #EEF2FF;
+            color: var(--color-accent);
+        }
+
+        .custom-option.selected {
+            color: white;
+            background-color: var(--color-accent);
+        }
+
+        .arrow {
+            position: relative;
+            height: 10px;
+            width: 10px;
+            margin-left: 10px;
+        }
+
+        .arrow::before,
+        .arrow::after {
+            content: "";
+            position: absolute;
+            bottom: 0px;
+            width: 0.15rem;
+            height: 100%;
+            transition: all 0.2s;
+        }
+
+        .arrow::before {
+            left: -3px;
+            transform: rotate(-45deg);
+            background-color: #394a6d;
+        }
+
+        .arrow::after {
+            left: 3px;
+            transform: rotate(45deg);
+            background-color: #394a6d;
+        }
+
+        .open .arrow::before {
+            left: -3px;
+            transform: rotate(45deg);
+        }
+
+        .open .arrow::after {
+            left: 3px;
+            transform: rotate(-45deg);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar flex flex-col justify-between">
+        <div>
+            <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 2rem;">
+                <a href="landing.html" style="text-decoration: none; color: inherit;">BusPass<span
+                        class="text-primary">.Pro</span></a>
+            </h2>
+            <nav>
+                <a href="#dashboard" class="nav-item active" onclick="switchView('dashboard')">Dashboard</a>
+                <a href="#profile" class="nav-item" onclick="switchView('profile')">My Profile</a>
+                <a href="#routes" class="nav-item" onclick="switchView('routes')">Routes</a>
+            </nav>
+        </div>
+        <div>
+            <div class="flex items-center gap-sm" style="padding: 1rem 0; border-top: 1px solid var(--color-border);">
+                <div style="background: var(--color-accent); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;"
+                    id="user-initial">U</div>
+                <div>
+                    <p class="text-sm font-medium" id="user-name">Student Name</p>
+                    <button onclick="logout()"
+                        style="border: none; background: none; color: var(--color-text-secondary); font-size: 0.8rem; cursor: pointer;">Logout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Dashboard View -->
+        <div id="view-dashboard" class="view-section active">
+            <header class="flex justify-between items-center mb-lg">
+                <h1 style="font-size: 1.75rem;">Dashboard</h1>
+                <span class="text-secondary" id="current-date">Jan 08, 2026</span>
+            </header>
+
+            <!-- Status Section -->
+            <div id="status-section" class="mb-lg">
+                <!-- Will be populated by JS -->
+            </div>
+
+            <!-- Application Form -->
+            <div class="card" id="application-form-card" style="max-width: 600px;">
+                <h3 style="margin-bottom: 1.5rem;">Apply for New Pass</h3>
+                <form id="passForm">
+                    <div class="form-group grid gap-md" style="grid-template-columns: 1fr 1fr;">
+                        <div>
+                            <label class="form-label">Route From</label>
+                            <select class="form-control" id="route-from" required>
+                                <option value="">Select Origin</option>
+                                <option value="Campus A">Campus A</option>
+                                <option value="City Center">City Center</option>
+                                <option value="North Station">North Station</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Route To</label>
+                            <select class="form-control" id="route-to" required>
+                                <option value="">Select Destination</option>
+                                <option value="Campus Main">Campus Main</option>
+                                <option value="Downtown">Downtown</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Pass Duration</label>
+                        <div class="flex gap-md">
+                            <label class="flex items-center gap-sm"
+                                style="cursor: pointer; padding: 0.5rem; border: 1px solid var(--color-border); border-radius: var(--radius-sm); flex: 1;">
+                                <input type="radio" name="duration" value="1 Month" checked> 1 Month
+                            </label>
+                            <label class="flex items-center gap-sm"
+                                style="cursor: pointer; padding: 0.5rem; border: 1px solid var(--color-border); border-radius: var(--radius-sm); flex: 1;">
+                                <input type="radio" name="duration" value="6 Months"> 6 Months (Semester)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Upload ID Proof</label>
+                        <input type="file" class="form-control"
+                            style="background: var(--color-bg-alt); padding: 0.5rem;">
+                        <small class="text-secondary">Please upload your college ID card.</small>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Application</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Profile View -->
+        <div id="view-profile" class="view-section">
+            <header class="mb-lg">
+                <h1 style="font-size: 1.75rem;">My Profile</h1>
+            </header>
+            <div class="card" style="max-width: 600px;">
+                <div class="flex items-center gap-md mb-lg">
+                    <div style="width: 80px; height: 80px; background: var(--color-accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;"
+                        id="profile-initial">U</div>
+                    <div>
+                        <h2 id="profile-name">Student Name</h2>
+                        <p class="text-secondary" id="profile-email">student@example.com</p>
+                    </div>
+                </div>
+                <div class="grid gap-md">
+                    <div>
+                        <label class="text-secondary text-sm">Student ID</label>
+                        <p class="font-medium" id="profile-id">ST-12345</p>
+                    </div>
+                    <div>
+                        <label class="text-secondary text-sm">Department</label>
+                        <p class="font-medium">Computer Science</p>
+                    </div>
+                    <div>
+                        <label class="text-secondary text-sm">Year</label>
+                        <p class="font-medium">3rd Year</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Routes View -->
+        <div id="view-routes" class="view-section">
+            <header class="mb-lg">
+                <h1 style="font-size: 1.75rem;">Available Routes</h1>
+            </header>
+            <div class="card">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--color-border); text-align: left;">
+                            <th style="padding: 1rem 0;">Route Name</th>
+                            <th style="padding: 1rem 0;">From</th>
+                            <th style="padding: 1rem 0;">To</th>
+                            <th style="padding: 1rem 0;">Timings</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid var(--color-border);">
+                            <td style="padding: 1rem 0; font-weight: 500;">Route A Express</td>
+                            <td style="padding: 1rem 0;">City Center</td>
+                            <td style="padding: 1rem 0;">Campus Main</td>
+                            <td style="padding: 1rem 0;">7:30 AM - 9:00 AM</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--color-border);">
+                            <td style="padding: 1rem 0; font-weight: 500;">North Campus Shuttle</td>
+                            <td style="padding: 1rem 0;">North Station</td>
+                            <td style="padding: 1rem 0;">Campus Main</td>
+                            <td style="padding: 1rem 0;">8:00 AM - 9:30 AM</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 1rem 0; font-weight: 500;">Downtown Loop</td>
+                            <td style="padding: 1rem 0;">Downtown</td>
+                            <td style="padding: 1rem 0;">Campus A</td>
+                            <td style="padding: 1rem 0;">7:45 AM - 9:15 AM</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/storage.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        const currentUser = storage.getCurrentUser();
+        // Redirect if not student
+        if (!currentUser || currentUser.role !== 'student') {
+            window.location.href = 'login.html';
+        }
+
+        // Set User Info
+        document.getElementById('user-name').textContent = currentUser.name;
+        document.getElementById('user-initial').textContent = currentUser.name.charAt(0).toUpperCase();
+        document.getElementById('current-date').textContent = new Date().toDateString();
+
+        // Profile Data Population
+        document.getElementById('profile-name').textContent = currentUser.name;
+        document.getElementById('profile-email').textContent = currentUser.email;
+        document.getElementById('profile-initial').textContent = currentUser.name.charAt(0).toUpperCase();
+        document.getElementById('profile-id').textContent = 'ST-' + currentUser.id.substring(0, 5).toUpperCase();
+
+        // Navigation Logic
+        function switchView(viewName) {
+            // Update Navigation Stats
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            const activeLink = document.querySelector(`a[href="#${viewName}"]`);
+            if (activeLink) activeLink.classList.add('active');
+
+            // Update Views
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            const activeView = document.getElementById(`view-${viewName}`);
+            if (activeView) activeView.classList.add('active');
+        }
+
+        function logout() {
+            storage.logout();
+            window.location.href = 'landing.html';
+        }
+
+        // Dashboard View
+        function showNewApplicationForm() {
+            document.getElementById('application-form-card').style.display = 'block';
+            document.getElementById('application-form-card').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function deleteApp(appId) {
+            if (confirm('Are you sure you want to delete this application?')) {
+                storage.deleteApplication(appId);
+                renderStatus();
+            }
+        }
+
+        function renderStatus() {
+            const apps = storage.getApplicationsByStudentId(currentUser.id);
+            const statusSection = document.getElementById('status-section');
+            const formCard = document.getElementById('application-form-card');
+
+            // Header Button Update
+            const dashboardHeader = document.querySelector('#view-dashboard header');
+            if (!document.getElementById('btn-new-app')) {
+                const btnNew = document.createElement('button');
+                btnNew.id = 'btn-new-app';
+                btnNew.innerHTML = '+';
+                btnNew.className = 'btn btn-primary';
+                btnNew.style.width = '40px';
+                btnNew.style.height = '40px';
+                btnNew.style.borderRadius = '50%';
+                btnNew.style.display = 'flex';
+                btnNew.style.alignItems = 'center';
+                btnNew.style.justifyContent = 'center';
+                btnNew.style.fontSize = '1.5rem';
+                btnNew.style.padding = '0';
+                btnNew.onclick = showNewApplicationForm;
+                dashboardHeader.appendChild(btnNew);
+            }
+
+            if (apps.length === 0) {
+                statusSection.innerHTML = `
+                    <div class="card" style="border-left: 4px solid var(--color-accent);">
+                        <h3>No Active Pass</h3>
+                        <p class="text-secondary">You haven't applied for a bus pass yet. Fill out the form below to get started.</p>
+                    </div>
+                `;
+                formCard.style.display = 'block';
+                return;
+            }
+
+            // Get latest application
+            const latestApp = apps[apps.length - 1];
+
+            let badgeClass = '';
+            if (latestApp.status === 'Pending') badgeClass = 'status-pending';
+            else if (latestApp.status === 'Approved') badgeClass = 'status-approved';
+            else badgeClass = 'status-rejected';
+
+            let validityHtml = '';
+            let deleteBtnHtml = `<button onclick="deleteApp('${latestApp.id}')" style="background: #FEE2E2; color: #DC2626; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; font-weight: 500; font-size: 0.875rem;">Delete Request</button>`;
+
+            if (latestApp.status === 'Approved') {
+                const qrData = `PassID:${latestApp.id}|Student:${currentUser.name}|ValidUntil:${latestApp.validUntil}`;
+                const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(qrData)}`;
+
+                statusSection.innerHTML = `
+                    <div style="text-align: center; margin-bottom: 2rem;">
+                        <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Your Digital Bus Pass</h2>
+                        <p class="text-secondary">Show this pass to the bus driver for verification.</p>
+                    </div>
+
+                    <div class="pass-card">
+                        <div class="pass-header">
+                            <div class="pass-header-content">
+                                <div class="flex justify-between items-start mb-lg">
+                                    <div class="flex items-center gap-sm">
+                                        <div style="background: rgba(255,255,255,0.2); padding: 0.5rem; border-radius: 0.5rem; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">🚌</div>
+                                        <span style="font-weight: 700; font-size: 1.1rem;">BusPass</span>
+                                    </div>
+                                    <span class="pass-badge">● Active</span>
+                                </div>
+                                <div style="margin-bottom: 1.5rem;">
+                                    <span style="display: block; font-size: 0.75rem; opacity: 0.8; margin-bottom: 0.25rem;">Student Name</span>
+                                    <span style="font-size: 1.5rem; font-weight: 700;">${currentUser.name}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <div>
+                                        <span style="display: block; font-size: 0.75rem; opacity: 0.8; margin-bottom: 0.25rem;">Student ID</span>
+                                        <span style="font-weight: 600;">ST-${currentUser.id.substring(currentUser.id.length - 5).toUpperCase()}</span>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <span style="display: block; font-size: 0.75rem; opacity: 0.8; margin-bottom: 0.25rem;">Pass ID</span>
+                                        <span style="font-weight: 600;">BP-${latestApp.id.substring(latestApp.id.length - 6).toUpperCase()}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pass-body">
+                            <div style="background: white; padding: 1rem; border-radius: 1rem; display: inline-block; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #F1F5F9; margin-bottom: 2rem;">
+                                <img src="${qrUrl}" alt="QR" style="width: 160px; height: 160px; display: block;">
+                            </div>
+                            <p class="text-secondary" style="font-size: 0.875rem; margin-bottom: 2rem;">Scan for verification</p>
+
+                            <div class="info-box">
+                                <div style="color: #3B82F6; font-size: 1.25rem;">📍</div>
+                                <div>
+                                    <span class="text-secondary" style="font-size: 0.75rem;">Route</span>
+                                    <div style="font-weight: 600; color: #0F172A;">${latestApp.routeFrom} - ${latestApp.routeTo}</div>
+                                </div>
+                            </div>
+
+                            <div class="info-box">
+                                <div style="color: #3B82F6; font-size: 1.25rem;">📅</div>
+                                <div>
+                                    <span class="text-secondary" style="font-size: 0.75rem;">Validity Period</span>
+                                    <div style="font-weight: 600; color: #0F172A;">
+                                        ${new Date(latestApp.validFrom).toLocaleDateString()} - ${new Date(latestApp.validUntil).toLocaleDateString()}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="action-buttons">
+                                <button class="btn-outline" onclick="alert('Download feature coming soon!')">📥 Download</button>
+                                <button class="btn-outline" onclick="alert('Share link copied!')">🔗 Share</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mt-lg" style="max-width: 400px; margin: 2rem auto 0; border: none; background: transparent; box-shadow: none;">
+                        <h4 style="margin-bottom: 1rem;">How to Use</h4>
+                        <ul style="list-style: none; padding: 0; font-size: 0.875rem; color: #64748B;">
+                            <li style="margin-bottom: 0.75rem; display: flex; gap: 0.75rem;">
+                                <span style="background: #EFF6FF; color: #2563EB; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; flex-shrink: 0;">1</span>
+                                Show this digital pass to the bus driver when boarding
+                            </li>
+                            <li style="margin-bottom: 0.75rem; display: flex; gap: 0.75rem;">
+                                <span style="background: #EFF6FF; color: #2563EB; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; flex-shrink: 0;">2</span>
+                                The QR code can be scanned for quick verification
+                            </li>
+                             <li style="margin-bottom: 0.75rem; display: flex; gap: 0.75rem;">
+                                <span style="background: #EFF6FF; color: #2563EB; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; flex-shrink: 0;">3</span>
+                                Keep your pass accessible on your phone
+                            </li>
+                        </ul>
+                    </div>
+                `;
+
+                formCard.style.display = 'none';
+                return;
+            }
+            if (latestApp.status === 'Approved') {
+                deleteBtnHtml = '';
+
+                const qrData = `PassID:${latestApp.id}|Student:${currentUser.name}|ValidUntil:${latestApp.validUntil}`;
+                const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrData)}`;
+
+                validityHtml = `
+                    <div class="mt-lg grid gap-md" style="grid-template-columns: 1fr 1fr; background: var(--color-bg-alt); padding: 1rem; border-radius: var(--radius-sm);">
+                        <div>
+                            <span class="text-secondary" style="font-size: 0.875rem;">Valid From</span>
+                            <p style="font-weight: 600;">${new Date(latestApp.validFrom).toLocaleDateString()}</p>
+                        </div>
+                        <div>
+                            <span class="text-secondary" style="font-size: 0.875rem;">Valid Until</span>
+                            <p style="font-weight: 600;">${new Date(latestApp.validUntil).toLocaleDateString()}</p>
+                        </div>
+                    </div>
+                    <div class="mt-lg text-center">
+                        <img src="${qrUrl}" alt="Pass QR" style="width: 150px; height: 150px; margin: 0 auto; border: 4px solid white; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                        <p class="text-secondary" style="margin-top: 0.5rem; font-size: 0.875rem;">Scan this QR at the bus entrance</p>
+                    </div>
+                `;
+            }
+
+            statusSection.innerHTML = `
+                <div class="card">
+                    <div class="flex justify-between items-center mb-lg">
+                        <h3>Application Status</h3>
+                        <div class="flex gap-sm items-center">
+                            <span class="status-badge ${badgeClass}">${latestApp.status}</span>
+                            ${deleteBtnHtml}
+                        </div>
+                    </div>
+                    <div class="grid gap-md" style="grid-template-columns: repeat(2, 1fr);">
+                         <div>
+                            <span class="text-secondary">Route</span>
+                            <p style="font-weight: 500;">${latestApp.routeFrom} &rarr; ${latestApp.routeTo}</p>
+                        </div>
+                        <div>
+                             <span class="text-secondary">Duration</span>
+                            <p style="font-weight: 500;">${latestApp.duration}</p>
+                        </div>
+                    </div>
+                    ${validityHtml}
+                    ${latestApp.status === 'Rejected' ? `<div class="mt-lg text-error" style="color: var(--color-error);">Reason: ${latestApp.rejectReason || 'Details incorrect'}</div>` : ''}
+                </div>
+            `;
+
+            // Hide form if Pending or Approved
+            if (latestApp.status === 'Pending' || latestApp.status === 'Approved') {
+                formCard.style.display = 'none';
+            } else {
+                formCard.style.display = 'block';
+            }
+        }
+
+        renderStatus();
+
+        // Handle Form Submit
+        document.getElementById('passForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const from = document.getElementById('route-from').value;
+            const to = document.getElementById('route-to').value;
+            const duration = document.querySelector('input[name="duration"]:checked').value;
+
+            const newApp = {
+                id: 'app_' + Date.now(),
+                studentId: currentUser.id,
+                studentName: currentUser.name,
+                studentEmail: currentUser.email,
+                routeFrom: from,
+                routeTo: to,
+                duration: duration,
+                status: 'Pending',
+                appliedAt: new Date().toISOString()
+            };
+
+            storage.saveApplication(newApp);
+            renderStatus();
+        });
+
+        // Custom Dropdown Logic
+        function setupCustomDropdowns() {
+            document.querySelectorAll('select.form-control').forEach(select => {
+                // Check if already custom
+                if (select.parentNode.classList.contains('custom-select-wrapper')) return;
+
+                const wrapper = document.createElement('div');
+                wrapper.classList.add('custom-select-wrapper');
+                select.parentNode.insertBefore(wrapper, select);
+                wrapper.appendChild(select);
+
+                select.style.display = 'none';
+
+                const customSelect = document.createElement('div');
+                customSelect.classList.add('custom-select');
+                wrapper.appendChild(customSelect);
+
+                const trigger = document.createElement('div');
+                trigger.classList.add('custom-select__trigger');
+                // Initial text
+                const initialText = select.options[select.selectedIndex] ? select.options[select.selectedIndex].textContent : 'Select';
+                trigger.innerHTML = `<span>${initialText}</span><div class="arrow"></div>`;
+                customSelect.appendChild(trigger);
+
+                const optionsDiv = document.createElement('div');
+                optionsDiv.classList.add('custom-options');
+                customSelect.appendChild(optionsDiv);
+
+                for (const option of select.options) {
+                    if (option.value === "") continue; // Skip placeholder if empty value
+
+                    const span = document.createElement('span');
+                    span.classList.add('custom-option');
+                    span.textContent = option.textContent;
+                    span.dataset.value = option.value;
+
+                    if (option.selected) {
+                        span.classList.add('selected');
+                    }
+
+                    span.addEventListener('click', function () {
+                        // Update Styled UI
+                        trigger.querySelector('span').textContent = this.textContent;
+                        optionsDiv.querySelectorAll('.custom-option').forEach(opt => opt.classList.remove('selected'));
+                        this.classList.add('selected');
+
+                        // Update Original Select
+                        select.value = this.dataset.value;
+                        // Trigger change event if needed
+                        select.dispatchEvent(new Event('change'));
+
+                        // Close
+                        customSelect.classList.remove('open');
+                    });
+
+                    optionsDiv.appendChild(span);
+                }
+
+                trigger.addEventListener('click', function () {
+                    // Close others
+                    document.querySelectorAll('.custom-select').forEach(cs => {
+                        if (cs !== customSelect) cs.classList.remove('open');
+                    });
+                    customSelect.classList.toggle('open');
+                });
+            });
+
+            // Close when clicking outside
+            window.addEventListener('click', function (e) {
+                if (!e.target.closest('.custom-select')) {
+                    document.querySelectorAll('.custom-select').forEach(cs => cs.classList.remove('open'));
+                }
+            });
+        }
+
+        // Initialize Dropdowns
+        document.addEventListener('DOMContentLoaded', setupCustomDropdowns);
+        // Also call immediately in case DOM is already ready (for hot reloads or simple pages)
+        setupCustomDropdowns();
+    </script>
+</body>
+
+</html>

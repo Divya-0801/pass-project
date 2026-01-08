@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Bus Pass System</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #E5E7EB;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .main-wrapper {
+            background: white;
+            border-radius: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 450px;
+            padding: 3rem 2.5rem;
+            text-align: center;
+        }
+        .auth-header {
+            margin-bottom: 2.5rem;
+        }
+        .auth-header h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .form-control {
+            background: #F9FAFB;
+            border: 1px solid #F3F4F6;
+            padding: 1rem;
+            border-radius: 1rem; /* More rounded inputs */
+        }
+        .form-control:focus {
+            background: white;
+            border-color: var(--color-accent);
+        }
+    </style>
+</head>
+<body>
+    <div class="main-wrapper fade-in">
+        <div class="auth-header">
+            <div style="width: 40px; height: 40px; background: black; border-radius: 50%; margin: 0 auto 1.5rem;"></div>
+            <h2>Welcome Back</h2>
+            <p class="text-secondary">Please enter your details to sign in.</p>
+        </div>
+
+        <div id="error-message" class="error-msg" style="background:#FEE2E2; color:#DC2626; padding:0.75rem; border-radius:0.75rem; margin-bottom:1rem; display:none;"></div>
+
+        <form id="loginForm" style="text-align: left;">
+            <div class="form-group">
+                <label for="email" class="form-label" style="font-weight: 600;">Email Address</label>
+                <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label for="password" class="form-label" style="font-weight: 600;">Password</label>
+                <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+            </div>
+            
+            <div class="flex justify-between items-center" style="margin-bottom: 2rem;">
+                <label class="flex items-center text-secondary" style="font-size: 0.875rem; cursor: pointer;">
+                    <input type="checkbox" style="margin-right: 0.5rem; accent-color: black;"> Remember me
+                </label>
+                <a href="#" style="font-size: 0.875rem; font-weight: 600;">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; background: black; padding: 1rem;">Sign In</button>
+        </form>
+
+        <div class="text-center mt-lg" style="margin-top: 2rem;">
+            <p class="text-secondary" style="font-size: 0.95rem;">
+                Don't have an account? <a href="signup.html" style="color: black; font-weight: 700;">Sign up</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="../js/storage.js"></script>
+    <script src="../js/auth.js"></script>
+</body>
+</html>

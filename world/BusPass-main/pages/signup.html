@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Bus Pass System</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: var(--color-bg-alt);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 450px;
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .error-msg {
+            background-color: #FEF2F2;
+            color: var(--color-error);
+            padding: 0.75rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            display: none;
+            border: 1px solid #FECACA;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-card fade-in">
+        <div class="auth-header">
+            <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Create Account</h2>
+            <p class="text-secondary">Apply for your bus pass today.</p>
+        </div>
+
+        <div id="error-message" class="error-msg"></div>
+
+        <form id="signupForm">
+            <div class="form-group">
+                <label for="name" class="form-label">Full Name</label>
+                <input type="text" id="name" class="form-control" placeholder="John Doe" required>
+            </div>
+            <div class="form-group">
+                <label for="email" class="form-label">Email Address</label>
+                <input type="email" id="email" class="form-control" placeholder="john@college.edu" required>
+            </div>
+            <div class="form-group">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" id="password" class="form-control" placeholder="Create a password" required>
+            </div>
+            <div class="form-group">
+                <label for="confirm-password" class="form-label">Confirm Password</label>
+                <input type="password" id="confirm-password" class="form-control" placeholder="Confirm password"
+                    required>
+            </div>
+
+            <button type="submit" class="btn btn-accent" style="width: 100%; margin-top: 1rem;">Create Account</button>
+        </form>
+
+        <div class="text-center mt-lg" style="margin-top: 1.5rem;">
+            <p class="text-secondary" style="font-size: 0.875rem;">
+                Already have an account? <a href="login.html" style="color: var(--color-accent); font-weight: 500;">Sign
+                    in</a>
+            </p>
+            <p style="margin-top: 0.5rem;"><a href="landing.html" class="text-secondary"
+                    style="font-size: 0.8rem;">&larr; Back to Home</a></p>
+        </div>
+    </div>
+
+    <script src="../js/storage.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        // Simple password match check
+        document.getElementById('signupForm').addEventListener('submit', function (e) {
+            const pass = document.getElementById('password').value;
+            const confirm = document.getElementById('confirm-password').value;
+            if (pass !== confirm) {
+                e.preventDefault();
+                const err = document.getElementById('error-message');
+                err.textContent = "Passwords do not match";
+                err.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BusPass Pro - Modern Commute</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            /* The reference has a gray background body, with a white 'main' card wrapper */
+            background-color: #E5E7EB;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+
+
+        .main-wrapper {
+            background: white;
+            border-radius: 2.5rem;
+            /* Very large radius like reference */
+            min-height: calc(100vh - 4rem);
+            padding: 2rem 4rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Nav */
+        .navbar {
+            padding: 1rem 0;
+            margin-bottom: 4rem;
+        }
+
+        .logo {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Hero */
+        .hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6rem;
+        }
+
+        .hero-text h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 4rem;
+            line-height: 1.1;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-text p {
+            font-size: 1.25rem;
+            color: var(--color-text-secondary);
+            margin-bottom: 2.5rem;
+            max-width: 450px;
+        }
+
+        .hero-image {
+            position: relative;
+        }
+
+        .hero-image img {
+            max-width: 600px;
+            /* No border radius or shadow on the illustration itself based on user request "third image" which is an illustration */
+            filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.1));
+        }
+
+        /* Key Features - "Unique" Style */
+        .section-header {
+            margin-bottom: 3rem;
+        }
+
+        .section-header h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .feature-card {
+            padding: 3rem 2rem;
+            border-radius: 2rem;
+            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* Center align like reference */
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.1), 0 10px 20px -5px rgba(0, 0, 0, 0.04);
+            border-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .icon-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 24px;
+            /* Squircle */
+            background: #F9FAFB;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover .icon-circle {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            font-family: 'Outfit', sans-serif;
+            color: #111827;
+            font-weight: 700;
+        }
+
+        .feature-card p {
+            color: #6B7280;
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        /* How It Works Section */
+        .process-section {
+            padding: 6rem 0;
+            text-align: center;
+        }
+
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin: 4rem 0;
+            position: relative;
+        }
+
+
+
+        .step-card {
+            position: relative;
+            text-align: left;
+            padding-top: 2rem;
+        }
+
+        /* Large Number Background */
+        .step-number {
+            font-size: 8rem;
+            font-weight: 700;
+            color: #ECEFF1;
+            /* Very light gray/blue from reference */
+            line-height: 1;
+            position: absolute;
+            top: -2rem;
+            left: 0;
+            z-index: -1;
+            font-family: 'Outfit', sans-serif;
+            opacity: 0.6;
+            transition: all 0.3s ease;
+        }
+
+        .step-card:hover .step-number {
+            color: #f5c431;
+            /* Yellow on hover */
+            transform: translateY(-10px);
+        }
+
+        /* Connecting Line */
+        .step-card:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 2rem;
+            right: -1rem;
+            width: 100%;
+            /* Stretch to next */
+            height: 1px;
+            background: #E5E7EB;
+            z-index: -2;
+            display: none;
+            /* Hard to get perfect on flexible grid without specific widths, simplified for now or rely on gap */
+        }
+
+        /* Actually, reference has horizontal lines. Let's try to add them if possible, or skip for cleanness. 
+           The reference image shows lines between the numbers. 
+           Let's use a simpler approach: Just the numbers.
+        */
+
+        .step-card h4 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #111827;
+            margin-top: 3rem;
+            /* Push down below number overlap */
+        }
+
+        .step-card p {
+            color: #6B7280;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Responsive overrides */
+        @media (max-width: 1024px) {
+            .hero {
+                flex-direction: column-reverse;
+                text-align: center;
+            }
+
+            .hero-text p {
+                margin: 0 auto 2.5rem;
+            }
+
+            .process-grid {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .step-card::after {
+                display: none;
+                /* Hide connecting lines on mobile */
+            }
+
+            .main-wrapper {
+                padding: 1rem;
+                border-radius: 1.5rem;
+            }
+
+            body {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-wrapper">
+        <!-- Navbar -->
+        <nav class="navbar flex justify-between items-center">
+            <div class="logo">
+                <img src="../assets/logo.svg" alt="Logo" style="height: 90px; width: auto;">
+                BusPass Pro
+            </div>
+
+            <div class="nav-links flex items-center gap-xs"
+                style="display: none; @media (min-width: 768px) { display: flex; }">
+                <a href="#about" class="nav-link">About Us</a>
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#routes" class="nav-link">Routes</a>
+                <a href="#help" class="nav-link">Help</a>
+            </div>
+
+            <div class="flex items-center gap-sm">
+                <a href="login.html" class="nav-link" style="margin-right: 0.5rem;">Log In</a>
+                <a href="signup.html" class="btn btn-primary" style="background: black; color: white;">
+                    <span style="margin-right: 0.5rem;">⚡</span> Get Pass
+                </a>
+            </div>
+        </nav>
+
+        <!-- Hero -->
+        <section class="hero fade-in">
+            <div class="hero-text">
+                <div
+                    style="background: #FFFBEB; color: #111827; padding: 0.5rem 1rem; border-radius: 99px; display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 500; font-size: 0.875rem; margin-bottom: 1.5rem; border: 1px solid #FEF3C7;">
+                    <span
+                        style="background: #f5c431; color: white; border-radius: 50%; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; font-size: 10px;">✓</span>
+                    Trusted by 10,000+ students
+                </div>
+                <h1>Smart Bus Pass <br><span style="color: #f5c431;">Made Simple</span></h1>
+                <p>Say goodbye to paper passes and long queues. Apply, renew, and manage your student bus pass digitally
+                    — all in one place.</p>
+                <div class="flex gap-sm">
+                    <a href="signup.html" class="btn btn-accent"
+                        style="padding: 1rem 2.5rem; font-size: 1.1rem; box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.2);">
+                        Get Started &rarr;
+                    </a>
+                    <a href="login.html" class="btn"
+                        style="padding: 1rem 2.5rem; font-size: 1.1rem; background: white; border: 1px solid #E5E7EB; color: #374151;">
+                        Login to Dashboard
+                    </a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <!-- Using the updated simpler filename -->
+                <img src="../assets/Bus.svg" alt="Bus Illustration">
+
+                <!-- Decorative element behind/near bus to match the 'Unique' vibe -->
+                <div
+                    style="position: absolute; top: 10%; right: -10%; width: 100px; height: 100px; background: #FDE68A; border-radius: 50%; z-index: -1; opacity: 0.5;">
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works -->
+        <section id="how-it-works" class="process-section fade-in">
+            <div class="section-header">
+                <h2>How It Works</h2>
+                <p style="color: var(--color-text-secondary);">Get your digital bus pass in four simple steps.</p>
+            </div>
+
+            <div class="process-grid">
+                <!-- Step 01 -->
+                <div class="step-card">
+                    <span class="step-number">01</span>
+                    <h4>Create Account</h4>
+                    <p>Sign up with your student email and ID to verify your identity.</p>
+                </div>
+
+                <!-- Step 02 -->
+                <div class="step-card">
+                    <span class="step-number">02</span>
+                    <h4>Apply Online</h4>
+                    <p>Fill the application form and upload necessary documents.</p>
+                </div>
+
+                <!-- Step 03 -->
+                <div class="step-card">
+                    <span class="step-number">03</span>
+                    <h4>Get Approved</h4>
+                    <p>Admin reviews and approves your application instantly.</p>
+                </div>
+
+                <!-- Step 04 -->
+                <div class="step-card">
+                    <span class="step-number">04</span>
+                    <h4>Use Your Pass</h4>
+                    <p>Access your digital pass QR code and start commuting.</p>
+                </div>
+            </div>
+
+            <a href="signup.html" class="btn btn-primary"
+                style="padding: 1rem 3rem; font-size: 1.1rem; box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4);">
+                Start Your Application &rarr;
+            </a>
+        </section>
+
+        <!-- Features -->
+        <section id="features" style="padding: 4rem 0;">
+            <div class="section-header">
+                <span
+                    style="font-size: 0.875rem; letter-spacing: 0.1em; text-transform: uppercase; color: #9CA3AF; font-weight: 600;">Why
+                    Choose Us</span>
+                <h2>Key Features</h2>
+                <p style="max-width: 500px; color: var(--color-text-secondary); margin-top: 1rem;">We prioritize your
+                    comfort and time. Our digital system ensures you never stand in line for a pass again.</p>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="icon-circle" style="background: #FFFBEB; color: #f5c431;">
+                        ⚡
+                    </div>
+                    <div>
+                        <h3>Instant Approval</h3>
+                        <p class="text-secondary">Submit your details and get verified by administration within hours.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon-circle" style="background: #F3F4F6; color: #374151;">
+                        📱
+                    </div>
+                    <div>
+                        <h3>Digital ID</h3>
+                        <p class="text-secondary">Your phone is your pass. Show your QR code to board any campus bus.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon-circle" style="background: #FFFBEB; color: #f5c431;">
+                        🔔
+                    </div>
+                    <div>
+                        <h3>Smart Alerts</h3>
+                        <p class="text-secondary">Get notified before your pass expires so you can renew instantly.</p>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon-circle" style="background: #F3F4F6; color: #374151;">
+                        🛡️
+                    </div>
+                    <div>
+                        <h3>Secure Data</h3>
+                        <p class="text-secondary">Your student data is encrypted and used only for verification.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script src="../js/storage.js"></script>
+    <script src="../js/auth.js"></script>
+</body>
+
+</html>

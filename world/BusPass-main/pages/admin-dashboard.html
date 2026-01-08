@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Bus Pass System</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .admin-sidebar {
+            width: 250px;
+            background: #111827;
+            color: white;
+            height: 100vh;
+            position: fixed;
+            padding: var(--spacing-md);
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: var(--spacing-lg);
+            background-color: var(--color-bg-alt);
+            min-height: 100vh;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #9CA3AF;
+            border-radius: var(--radius-sm);
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-item.active {
+            background-color: #374151;
+            color: white;
+        }
+
+        .nav-item:hover {
+            color: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        th {
+            background-color: #F9FAFB;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-Pending {
+            background: #F3F4F6;
+            color: #374151;
+        }
+
+        .status-Approved {
+            background: #FFFBEB;
+            color: #D97706;
+        }
+
+        .status-Rejected {
+            background: #F3F4F6;
+            color: #9CA3AF;
+        }
+
+        .action-btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .btn-approve {
+            background: #DCFCE7;
+            color: #166534;
+            border-color: #166534;
+        }
+
+        .btn-reject {
+            background: #FEE2E2;
+            color: #991B1B;
+            border-color: #991B1B;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            animation: slideUp 0.3s ease-out;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6B7280;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-group label {
+            display: block;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            color: #6B7280;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.05em;
+        }
+
+        .info-group p {
+            font-weight: 500;
+            font-size: 1rem;
+            color: #111827;
+        }
+
+        .id-proof-preview {
+            width: 100%;
+            height: 200px;
+            background: #F3F4F6;
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            border: 2px dashed #D1D5DB;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .id-proof-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            /* or cover based on preference */
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            padding-top: 1.5rem;
+            border-top: 1px solid #E5E7EB;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="admin-sidebar flex flex-col justify-between">
+        <div>
+            <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 2rem;">
+                <a href="landing.html" style="text-decoration: none; color: inherit;">Admin<span
+                        style="color: var(--color-accent);">Panel</span></a>
+            </h2>
+            <nav>
+                <a href="#" class="nav-item active">Applications</a>
+                <a href="#" class="nav-item">Users</a>
+                <a href="#" class="nav-item">Settings</a>
+            </nav>
+        </div>
+        <div>
+            <p class="text-xs" style="color: #6B7280; font-size: 0.75rem;">Logged in as Admin</p>
+            <button onclick="logout()"
+                style="border: none; background: none; color: #9CA3AF; font-size: 0.8rem; cursor: pointer; margin-top: 0.5rem;">Logout</button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <header class="flex justify-between items-center mb-lg">
+            <h1 style="font-size: 1.75rem;">Pass Applications</h1>
+            <div class="flex gap-sm">
+                <button class="btn btn-secondary" onclick="renderTable('Pending')">Pending</button>
+                <button class="btn btn-secondary" onclick="renderTable('All')">All</button>
+            </div>
+        </header>
+
+        <div class="card fade-in" style="padding: 0; overflow: hidden;">
+            <table id="apps-table">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Route</th>
+                        <th>Duration</th>
+                        <th>Applied On</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- Rows rendered by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    </div>
+
+    <!-- Verification Modal -->
+    <div id="verificationModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 style="font-size: 1.5rem; font-weight: 700;">Verify Application</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-group">
+                    <label>Student Name</label>
+                    <p id="modal-name">Vinay Kumar</p>
+                </div>
+                <div class="info-group">
+                    <label>Email</label>
+                    <p id="modal-email">vinay@example.com</p>
+                </div>
+                <div class="info-group">
+                    <label>Route</label>
+                    <p id="modal-route">Campus A -> Main</p>
+                </div>
+                <div class="info-group">
+                    <label>Duration</label>
+                    <p id="modal-duration">6 Months</p>
+                </div>
+            </div>
+
+            <div class="info-group" style="margin-bottom: 1rem;">
+                <label>ID Proof Document</label>
+            </div>
+            <div class="id-proof-preview">
+                <!-- Fallback or Placeholder for simulated ID -->
+                <img src="https://via.placeholder.com/600x300/F3F4F6/9CA3AF?text=Student+ID+Card+Preview"
+                    alt="Student ID Proof">
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn" style="background: #FEE2E2; color: #991B1B; border: 1px solid #991B1B;"
+                    onclick="confirmReject()">Reject</button>
+                <button class="btn btn-primary" style="background: #059669;" onclick="confirmApprove()">Approve
+                    Pass</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/storage.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        const currentUser = storage.getCurrentUser();
+        // Redirect if not admin
+        if (!currentUser || currentUser.role !== 'admin') {
+            window.location.href = 'login.html';
+        }
+
+        function logout() {
+            storage.logout();
+            window.location.href = 'landing.html';
+        }
+
+        function renderTable(filter = 'All') {
+            const apps = storage.getApplications();
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+
+            const filteredApps = apps.filter(app => filter === 'All' || app.status === filter);
+
+            if (filteredApps.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center" style="padding: 2rem;">No applications found.</td></tr>';
+                return;
+            }
+
+            filteredApps.forEach(app => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <div style="font-weight: 500;">${app.studentName}</div>
+                        <div class="text-secondary" style="font-size: 0.8rem;">${app.studentEmail}</div>
+                    </td>
+                    <td>${app.routeFrom} &rarr; <br>${app.routeTo}</td>
+                    <td>${app.duration}</td>
+                    <td>${new Date(app.appliedAt).toLocaleDateString()}</td>
+                    <td><span class="status-badge status-${app.status}">${app.status}</span></td>
+                    <td>
+
+                        ${app.status === 'Pending' ? `
+                            <button class="action-btn" style="background: #111827; color: white;" onclick="openVerificationModal('${app.id}')">Review Application</button>
+                        ` : '-'}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        let currentAppId = null;
+
+        function openVerificationModal(appId) {
+            currentAppId = appId;
+            const apps = storage.getApplications();
+            const app = apps.find(a => a.id === appId);
+
+            if (!app) return;
+
+            document.getElementById('modal-name').textContent = app.studentName;
+            document.getElementById('modal-email').textContent = app.studentEmail;
+            document.getElementById('modal-route').innerHTML = `${app.routeFrom} &rarr; ${app.routeTo}`;
+            document.getElementById('modal-duration').textContent = app.duration;
+
+            const modal = document.getElementById('verificationModal');
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('verificationModal').style.display = 'none';
+            currentAppId = null;
+        }
+
+        function confirmApprove() {
+            if (!currentAppId) return;
+            approveApp(currentAppId);
+            closeModal();
+            // Show toast or alert?
+            // alert('Application Approved');
+        }
+
+        function confirmReject() {
+            if (!currentAppId) return;
+            rejectApp(currentAppId);
+            closeModal();
+        }
+
+        function approveApp(appId) {
+            const apps = storage.getApplications();
+            const app = apps.find(a => a.id === appId);
+            if (app) {
+                app.status = 'Approved';
+                app.validFrom = new Date().toISOString();
+                // Set logic for duration
+                const now = new Date();
+                if (app.duration === '1 Month') {
+                    now.setMonth(now.getMonth() + 1);
+                } else {
+                    now.setMonth(now.getMonth() + 6);
+                }
+                app.validUntil = now.toISOString();
+
+                storage.saveApplication(app);
+                renderTable('All'); // Refresh
+            }
+        }
+
+        function rejectApp(appId) {
+            const reason = prompt("Enter rejection reason:");
+            if (reason) {
+                const apps = storage.getApplications();
+                const app = apps.find(a => a.id === appId);
+                if (app) {
+                    app.status = 'Rejected';
+                    app.rejectReason = reason;
+                    storage.saveApplication(app);
+                    renderTable('All'); // Refresh
+                }
+            }
+        }
+
+        // Initial render
+        renderTable('All');
+    </script>
+</body>
+
+</html>
